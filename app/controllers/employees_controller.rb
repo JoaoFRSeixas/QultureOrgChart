@@ -27,27 +27,49 @@ class EmployeesController < ApplicationController
   end
 
   def assign_manager
-  employee = Employee.find(params[:id])
-  manager = Employee.find_by(id: params[:manager_id])
+    employee = Employee.find(params[:id])
+    manager = Employee.find_by(id: params[:manager_id])
 
-  unless manager
-    return render json: { error: "Manager not found" }, status: :not_found
+    unless manager
+      return render json: { error: "Manager not found" }, status: :not_found
+    end
+
+    if employee.company_id != manager.company_id
+      return render json: { error: "Manager must belong to the same company" }, status: :unprocessable_entity
+    end
+
+    if creates_loop?(employee, manager)
+      return render json: { error: "This association would create a loop in the hierarchy" }, status: :unprocessable_entity
+    end
+
+    employee.manager = manager
+    if employee.save
+      render json: employee, status: :ok
+    else
+      render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
   end
 
-  if employee.company_id != manager.company_id
-    return render json: { error: "Manager must belong to the same company" }, status: :unprocessable_entity
+  def peers
+    employee = Employee.find(params[:id])
+      if employee.manager
+        peers = employee.manager.subordinates.where.not(id: employee.id)
+        render json: peers, status: :ok
+      else
+        render json: [], status: :ok
+      end
   end
 
-  if creates_loop?(employee, manager)
-    return render json: { error: "This association would create a loop in the hierarchy" }, status: :unprocessable_entity
+  def subordinates
+    employee = Employee.find(params[:id])
+    render json: employee.subordinates, status: :ok
   end
 
-  employee.manager = manager
-  if employee.save
-    render json: employee, status: :ok
-  else
-    render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
+  def second_level_subordinates
+    employee = Employee.find(params[:id])
+    second_level = employee.subordinates.flat_map(&:subordinates)
+    render json: second_level, status: :ok
   end
+
 end
 
 
