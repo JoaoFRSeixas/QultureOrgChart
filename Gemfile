@@ -43,5 +43,16 @@ group :development, :test do
   gem "brakeman", require: false
 
   # Omakase Ruby styling [https://github.com/rails/rubocop-rails-omakase/]
-  gem "rubocop-rails-omakase", require: false
+
+group :development, :test do
+  gem 'rspec-rails'
+  gem 'factory_bot_rails'
+  gem 'faker'
+end
+
+gem 'rack-cors'
+
+gem 'active_model_serializers'
+gem "rubocop-rails-omakase", require: false
+
 end
