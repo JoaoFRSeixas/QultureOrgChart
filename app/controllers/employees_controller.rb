@@ -26,6 +26,16 @@ class EmployeesController < ApplicationController
     head :no_content
   end
 
+  def update
+    employee = Employee.find(params[:id])
+    if employee.update(employee_params)
+      render json: employee, status: :ok
+    else
+      render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
+    end
+  end
+
+
   def assign_manager
     employee = Employee.find(params[:id])
     manager = Employee.find_by(id: params[:manager_id])
@@ -47,16 +57,7 @@ class EmployeesController < ApplicationController
       render json: employee, status: :ok
     else
       render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
-  end
-
-  def peers
-    employee = Employee.find(params[:id])
-      if employee.manager
-        peers = employee.manager.subordinates.where.not(id: employee.id)
-        render json: peers, status: :ok
-      else
-        render json: [], status: :ok
-      end
+    end
   end
 
   def subordinates
@@ -70,8 +71,15 @@ class EmployeesController < ApplicationController
     render json: second_level, status: :ok
   end
 
-end
-
+  def peers
+    employee = Employee.find(params[:id])
+    if employee.manager
+      peers = employee.manager.subordinates.where.not(id: employee.id)
+      render json: peers, status: :ok
+    else
+      render json: [], status: :ok
+    end
+  end
 
   private
 
@@ -84,12 +92,12 @@ end
   end
 
   def creates_loop?(employee, potential_manager)
-  current = potential_manager
-  while current
-    return true if current == employee
-    current = current.manager
+    current = potential_manager
+    while current
+      return true if current == employee
+      current = current.manager
+    end
+    false
   end
-  false
-end
 
 end
