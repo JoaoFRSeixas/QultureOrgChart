@@ -1,9 +1,40 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+require 'faker'
+
+# Limpa dados antigos
+Employee.destroy_all
+Company.destroy_all
+
+# Cria empresas
+3.times do
+  company = Company.create!(name: Faker::Company.unique.name)
+
+  # Cria gestores
+  managers = []
+  2.times do
+    managers << company.employees.create!(
+      name: Faker::Name.unique.name,
+      email: Faker::Internet.unique.email,
+      picture: nil
+    )
+  end
+
+  # Cria colaboradores e associa gestores
+  5.times do
+    manager = managers.sample
+    company.employees.create!(
+      name: Faker::Name.unique.name,
+      email: Faker::Internet.unique.email,
+      picture: nil,
+      manager: manager
+    )
+  end
+
+  # Cria um colaborador sem gestor
+  company.employees.create!(
+    name: Faker::Name.unique.name,
+    email: Faker::Internet.unique.email,
+    picture: nil
+  )
+end
+
+puts "Seed completed!"
