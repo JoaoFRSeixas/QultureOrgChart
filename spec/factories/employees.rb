@@ -1,9 +1,8 @@
 FactoryBot.define do
   factory :employee do
-    name { "MyString" }
-    email { "MyString" }
-    picture { "MyString" }
-    company { nil }
-    manager_id { 1 }
+    name { Faker::Name.name }
+    email { Faker::Internet.email }
+    picture { nil }
+    company
   end
 end
