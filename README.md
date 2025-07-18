@@ -21,33 +21,33 @@
 2. **Instale as dependências do backend (Rails):**
 
    ```bash
-   cd qulture_orgchart
+   cd QultureOrgChart
    bundle install
    ```
 
-3. **Instale as dependências do frontend (React):**
-
-   ```bash
-   cd ../orgchart-frontend  # ajuste o caminho conforme o seu projeto
-   npm install
-   ```
-
-4. **Configure o banco de dados:**
+3. **Configure o banco de dados:**
    (Usa SQLite por padrão)
 
    ```bash
-   cd ../qulture_orgchart
    rails db:setup
    ```
 
+4. **Instale as dependências do frontend (React):**
+
+   ```bash
+   cd ./frontend
+   npm install
+   ```
+
 5. **Rode o app inteiro (backend e frontend) em um comando:**
+Na raiz do projeto, rode:
 
    ```bash
    bin/dev
    ```
 
-   * Isso vai iniciar o Rails na porta `3000` e o React na porta `3001`.
-   * Acesse o frontend em [http://localhost:3001](http://localhost:3001).
+   * Isso vai iniciar o Rails na porta `3000` e o React na porta `5100`.
+   * Acesse o frontend em [http://localhost:5100](http://localhost:5100).
 
 ---
 
@@ -107,12 +107,5 @@
 * A edição de gestor pode ser feita no momento do cadastro ou posteriormente, na tela de colaboradores.
 * Assegurada a exclusão em cascata ao apagar empresas/colaboradores (se necessário).
 * Testes unitários no backend disponíveis (via RSpec e FactoryBot).
-
----
-
-## 👤 Feito por
-
-João Rodrigues Seixas
-Desenvolvedor Fullstack | Ruby on Rails | React
 
 ---
