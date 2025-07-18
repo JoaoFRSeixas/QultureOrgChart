@@ -28,13 +28,23 @@ class EmployeesController < ApplicationController
 
   def update
     employee = Employee.find(params[:id])
+    new_manager_id = params.dig(:employee, :manager_id)
+    manager = Employee.find_by(id: new_manager_id) if new_manager_id.present?
+
+    if manager && employee.company_id != manager.company_id
+      return render json: { error: "Manager must belong to the same company" }, status: :unprocessable_entity
+    end
+
+    if manager && creates_loop?(employee, manager)
+      return render json: { error: "This association would create a loop in the hierarchy" }, status: :unprocessable_entity
+    end
+
     if employee.update(employee_params)
       render json: employee, status: :ok
     else
       render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
     end
   end
-
 
   def assign_manager
     employee = Employee.find(params[:id])
@@ -99,5 +109,4 @@ class EmployeesController < ApplicationController
     end
     false
   end
-
 end
