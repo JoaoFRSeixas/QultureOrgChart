@@ -52,6 +52,7 @@ Na raiz do projeto, rode:
 ---
 
 6. **(Opcional) Rode os testes**
+
 Na raiz do projeto, rode:
 
    ```bash
