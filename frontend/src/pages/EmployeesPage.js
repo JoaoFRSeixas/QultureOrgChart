@@ -49,23 +49,33 @@ function EmployeesPage({ company, onBack, onSelectEmployee }) {
     <div className={`card${showOrgChart ? " card--wide" : ""}`}>
       <button className="button-main" onClick={onBack}>← Voltar</button>
       <h2>Colaboradores de {company.name}</h2>
-      <div style={{ textAlign: 'center', marginBottom: 20 }}>
+      <div className="toggle-actions-row">
+        <div className="toggle-dual">
+          <div
+            className="toggle-slider-dual"
+            style={{
+              left: showOrgChart ? "50%" : 0,
+              width: "50%",
+              background: "#CD90FF"
+            }}
+          />
+          <span
+            className={`toggle-option-dual ${!showOrgChart ? "active" : ""}`}
+            onClick={() => setShowOrgChart(false)}
+          >
+            Lista
+          </span>
+          <span
+            className={`toggle-option-dual ${showOrgChart ? "active" : ""}`}
+              style={{ justifyContent: 'flex-end', paddingRight: 12 }}
+
+            onClick={() => setShowOrgChart(true)}
+          >
+            Organograma
+          </span>
+        </div>
         <button
-          className={`button-main ${!showOrgChart ? "toggle-btn-active" : "toggle-btn-inactive"}`}
-          style={{ marginRight: 10 }}
-          onClick={() => setShowOrgChart(false)}
-        >
-          Lista
-        </button>
-        <button
-          className={`button-main ${showOrgChart ? "toggle-btn-active" : "toggle-btn-inactive"}`}
-          onClick={() => setShowOrgChart(true)}
-        >
-          Organograma
-        </button>
-        <button
-          className="button-main"
-          style={{ marginLeft: 18, background: "#fff", color: "#CD90FF", border: "2px solid #CD90FF" }}
+          className="button-main outlined"
           onClick={() => setShowForm(true)}
         >
           Cadastrar colaborador
@@ -88,7 +98,6 @@ function EmployeesPage({ company, onBack, onSelectEmployee }) {
                 <div className="employee-info">
                   <span>{emp.name}</span>
                   <span className="employee-email">{emp.email}</span>
-                  {/* Editar gestor */}
                   {editingManagerId === emp.id ? (
                     <ManagerEditForm
                       employee={emp}
