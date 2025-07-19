@@ -1,4 +1,3 @@
-// src/App.js
 import React, { useState } from 'react';
 import CompaniesPage from './pages/CompaniesPage';
 import EmployeesPage from './pages/EmployeesPage';
