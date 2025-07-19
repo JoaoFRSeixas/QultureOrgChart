@@ -10,13 +10,11 @@ function OrgChartPage({ employee, onBack }) {
   const [secondLevelPage, setSecondLevelPage] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  // Função para buscar os liderados 2º nível com paginação
   const fetchSecondLevel = async (page = 1) => {
     const res = await axios.get(
       `http://localhost:3000/employees/${employee.id}/second_level_subordinates?page=${page}`
     );
     setSecondLevel(res.data.data || []);
-    // Aceita tanto meta quanto o formato flat
     setSecondLevelMeta(
       res.data.meta || {
         total_pages: res.data.total_pages,
@@ -31,7 +29,6 @@ function OrgChartPage({ employee, onBack }) {
     if (!employee) return;
     setLoading(true);
 
-    // Buscar gestor
     if (employee.manager_id) {
       axios.get(`http://localhost:3000/employees/${employee.manager_id}`)
         .then(res => setManager(res.data));
@@ -39,7 +36,6 @@ function OrgChartPage({ employee, onBack }) {
       setManager(null);
     }
 
-    // Buscar pares e liderados diretos
     Promise.all([
       axios.get(`http://localhost:3000/employees/${employee.id}/peers`),
       axios.get(`http://localhost:3000/employees/${employee.id}/subordinates`)
@@ -48,13 +44,11 @@ function OrgChartPage({ employee, onBack }) {
       setSubordinates(subsRes.data);
     }).finally(() => setLoading(false));
 
-    // Carrega liderados 2º nível página 1
     fetchSecondLevel(1);
     setSecondLevelPage(1);
     // eslint-disable-next-line
   }, [employee]);
 
-  // Atualiza liderados de segundo nível ao mudar página
   useEffect(() => {
     if (employee) fetchSecondLevel(secondLevelPage);
     // eslint-disable-next-line
@@ -72,7 +66,6 @@ function OrgChartPage({ employee, onBack }) {
       <button className="button-main" onClick={onBack} style={{ marginBottom: 16 }}>← Voltar</button>
       <h2 style={{ marginBottom: 28 }}>Organograma de {employee.name}</h2>
 
-      {/* Gestor */}
       <div className="org-block">
         <span className="org-label">Gestor:</span>
         {manager ? (
@@ -82,7 +75,6 @@ function OrgChartPage({ employee, onBack }) {
         )}
       </div>
 
-      {/* Pares */}
       <div className="org-block">
         <span className="org-label">Pares:</span>
         {peers.length === 0 ? (
@@ -99,7 +91,6 @@ function OrgChartPage({ employee, onBack }) {
         )}
       </div>
 
-      {/* Liderados diretos */}
       <div className="org-block">
         <span className="org-label">Liderados diretos:</span>
         {subordinates.length === 0 ? (
@@ -116,7 +107,6 @@ function OrgChartPage({ employee, onBack }) {
         )}
       </div>
 
-      {/* Liderados 2º nível com paginação */}
       <div className="org-block">
         <span className="org-label">Liderados 2º nível:</span>
         {secondLevel.length === 0 ? (
