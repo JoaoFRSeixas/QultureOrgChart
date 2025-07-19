@@ -7,12 +7,8 @@ class EmployeesController < ApplicationController
   end
 
   def create
-    employee = @company.employees.new(employee_params)
-    if employee.save
-      render json: employee, status: :created
-    else
-      render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
-    end
+    result = Employees::CreateEmployee.new(@company, employee_params).call
+    render json: result.data, status: result.status
   end
 
   def show
@@ -22,73 +18,39 @@ class EmployeesController < ApplicationController
 
   def destroy
     employee = Employee.find(params[:id])
-    employee.destroy
-    head :no_content
+    result = Employees::DestroyEmployee.new(employee).call
+    head result.status
   end
 
   def update
     employee = Employee.find(params[:id])
-    new_manager_id = params.dig(:employee, :manager_id)
-    manager = Employee.find_by(id: new_manager_id) if new_manager_id.present?
-
-    if manager && employee.company_id != manager.company_id
-      return render json: { error: "Manager must belong to the same company" }, status: :unprocessable_entity
-    end
-
-    if manager && creates_loop?(employee, manager)
-      return render json: { error: "This association would create a loop in the hierarchy" }, status: :unprocessable_entity
-    end
-
-    if employee.update(employee_params)
-      render json: employee, status: :ok
-    else
-      render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
-    end
+    result = Employees::UpdateEmployee.new(employee, employee_params).call
+    render json: result.data, status: result.status
   end
 
   def assign_manager
     employee = Employee.find(params[:id])
-    manager = Employee.find_by(id: params[:manager_id])
-
-    unless manager
-      return render json: { error: "Manager not found" }, status: :not_found
-    end
-
-    if employee.company_id != manager.company_id
-      return render json: { error: "Manager must belong to the same company" }, status: :unprocessable_entity
-    end
-
-    if creates_loop?(employee, manager)
-      return render json: { error: "This association would create a loop in the hierarchy" }, status: :unprocessable_entity
-    end
-
-    employee.manager = manager
-    if employee.save
-      render json: employee, status: :ok
-    else
-      render json: { errors: employee.errors.full_messages }, status: :unprocessable_entity
-    end
+    manager_id = params[:manager_id]
+    result = Employees::AssignManager.new(employee, manager_id).call
+    render json: result.data, status: result.status
   end
 
   def subordinates
     employee = Employee.find(params[:id])
-    render json: employee.subordinates, status: :ok
+    result = Employees::ListSubordinates.new(employee).call
+    render json: result.data, status: result.status
   end
 
   def second_level_subordinates
     employee = Employee.find(params[:id])
-    second_level = employee.subordinates.flat_map(&:subordinates)
-    render json: second_level, status: :ok
+    result = Employees::ListSecondLevelSubordinates.new(employee).call
+    render json: result.data, status: result.status
   end
 
   def peers
     employee = Employee.find(params[:id])
-    if employee.manager
-      peers = employee.manager.subordinates.where.not(id: employee.id)
-      render json: peers, status: :ok
-    else
-      render json: [], status: :ok
-    end
+    result = Employees::ListPeers.new(employee).call
+    render json: result.data, status: result.status
   end
 
   private
@@ -99,14 +61,5 @@ class EmployeesController < ApplicationController
 
   def employee_params
     params.require(:employee).permit(:name, :email, :picture, :manager_id)
-  end
-
-  def creates_loop?(employee, potential_manager)
-    current = potential_manager
-    while current
-      return true if current == employee
-      current = current.manager
-    end
-    false
   end
 end
