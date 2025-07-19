@@ -55,4 +55,7 @@ gem 'rack-cors'
 gem 'active_model_serializers'
 gem "rubocop-rails-omakase", require: false
 
+gem 'kaminari'
+gem 'interactor'
+
 end
