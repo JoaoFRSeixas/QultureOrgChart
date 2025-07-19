@@ -1,21 +1,17 @@
 class CompaniesController < ApplicationController
   def index
-    companies = Company.all
-    render json: companies, status: :ok
+    result = Companies::ListCompanies.new.call
+    render json: result.data, status: result.status
   end
 
   def show
-    company = Company.find(params[:id])
-    render json: company, status: :ok
+    result = Companies::ShowCompany.new(params[:id]).call
+    render json: result.data, status: result.status
   end
 
   def create
-    company = Company.new(company_params)
-    if company.save
-      render json: company, status: :created
-    else
-      render json: { errors: company.errors.full_messages }, status: :unprocessable_entity
-    end
+    result = Companies::CreateCompany.new(company_params).call
+    render json: result.data, status: result.status
   end
 
   private
