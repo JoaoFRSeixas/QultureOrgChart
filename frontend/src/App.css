@@ -247,3 +247,47 @@ h2, h3 {
   text-align: right;
   padding-right: 32px;
 }
+.org-block {
+  margin-bottom: 20px;
+  padding: 16px 20px;
+  background: #f8f4fd;
+  border-radius: 14px;
+  box-shadow: 0 1px 4px rgba(205, 144, 255, 0.08);
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+.org-label {
+  color: #7648ab;
+  font-weight: 700;
+  min-width: 165px;
+}
+.org-value {
+  color: #4e3786;
+  font-weight: 600;
+}
+.org-list {
+  padding-left: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.org-item {
+  list-style: none;
+  padding: 6px 12px;
+  background: #fff;
+  border-radius: 9px;
+  box-shadow: 0 1px 3px rgba(205, 144, 255, 0.04);
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.org-pagination {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 14px;
+  gap: 10px;
+}
